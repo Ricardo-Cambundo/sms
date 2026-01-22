@@ -1,6 +1,6 @@
 import LottieView from "lottie-react-native"
-import { useRef, useState } from "react"
-import { Dimensions, Keyboard, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { useEffect, useRef, useState } from "react"
+import { Dimensions, Keyboard, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import Icon from 'react-native-vector-icons/Ionicons'
 const Search = ({open, setOpen}:{open: any, setOpen: any}) => {
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
       width: "95%",
       backgroundColor: "#dbdbdb44",
       height: 40,
-      borderRadius: 50,
+      borderRadius: 5,
       flexDirection: "row",
       paddingHorizontal: 7,
     },
@@ -247,8 +247,8 @@ const styles = StyleSheet.create({
       marginLeft: 10,
     },
     title: {
-      // color: 'grey',
-      fontWeight: "800",
+      color: 'grey',
+      fontWeight: "500",
       fontSize: 13,
     },
     history: {
@@ -302,6 +302,7 @@ const styles = StyleSheet.create({
             borderRadius: 25,
             marginTop: 10
         },
+        
         buttonText: {
             color: 'white',
             textAlign: 'center',
@@ -322,20 +323,195 @@ const styles = StyleSheet.create({
             fontSize: 14,
             fontWeight: '600'
         },
+        tags: {
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          gap: 15,
+          marginTop: 10
+        },
+        tag1: {
+          backgroundColor: "#003a75",
+          paddingHorizontal: 25,
+          paddingVertical: 6,
+          borderRadius: 500
+          
+        },
+        tagText1: {
+          color: 'white',
+        },
+        tag: {
+          backgroundColor: "white",
+          paddingHorizontal: 25,
+          paddingVertical: 6,
+          borderRadius: 500,
+          borderWidth: 1,
+          borderColor: '#003a75'
+          
+        },
+        tagText: {
+          color: '#003a75',
+        },
+        modalView: {
+          height: 300,
+          width: '100%',
+          backgroundColor: 'white',
+          borderRadius: 15,
+          padding: 20,
+          alignItems: 'center',
+          justifyContent: 'space-between'
+        },
+        modalTitle: {
+          textAlign: 'center',
+          fontWeight: '500',
+          fontSize: 14
+        },
+        modalButtons: {
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        },
+        
+       
+        button2: {
+          flex: 1,
+          alignItems: 'center',
+          padding: 10,
+          borderRadius: 5,
+          justifyContent: 'center'
+        },
+        button2Text: {
+          fontSize: 13,
+          color: '#f39e00',
+          fontWeight: '600'
+        },
+        
     })
     const [message, setMessage] = useState('')
     const [load, setLoad] = useState(false)
     const [done, setDone] = useState(false)
+    const [destination, setDestination] = useState("Todos")
+    const [focused, setFocused] = useState(false)
+    const [openModal, setOpenModal] = useState(false)
     const send = () => {
         setLoad(true)
         setTimeout(() => {
             setLoad(false)
+            setOpenModal(true)
         }, 1000)
     }
+    useEffect(() => {
+      if (search.length > 0 && !searched) {
+        setFocused(true)
+      }
+    }, [search])
+    
     return (
         <View style={{flex: 1}}>
-            <View style={styles.header}>
-          <View style={styles.input}>
+          <Modal style={{margin: 0, justifyContent: 'center', marginHorizontal: 40}}
+            // animationIn={'zoomIn'}
+            
+            // animationOut={'bounceOutRight'}
+            // onBackdropPress={() => {
+                
+            //     setOpen(false)
+            // }} 
+            visible={openModal}
+            animationType="fade"
+            backdropColor={'rgba(0, 0, 0, 0.63)'}
+            presentationStyle="overFullScreen"
+
+            // onSwipeComplete={() => {
+            //     setOpen(false)
+            // }}
+            // propagateSwipe
+            >
+            <View style={[styles.modalView, { margin: 'auto', width: '95%' }]}>
+              <Text style={[styles.modalTitle, {color: 'green'}]}>Mensagem enviada com sucesso</Text>
+              <LottieView 
+                autoPlay={true}
+                speed={1}
+                
+                style={{width: '100%', height: '70%', transform: [{scale: 1.5}]}}
+                source={require('@/assets/lotties/loading1.json')}
+                />
+                <View style={styles.modalButtons}>
+                  <TouchableOpacity style={[styles.button1, {flex: 1, borderRadius: 5, borderColor: '#003a75'}]} onPress={() => {
+                    setOpenModal(false)
+                    // navigation.dispatch(StackActions.push('cart', {
+                    //   noBottomTabs: true
+                    // }))
+                    setTimeout(() => {
+                                          setOpen(false)
+
+                    }, 500)
+
+                  }}>
+                    <Text style={styles.buttonText1}>Ver historial</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[styles.button2, {flex: 1}]} onPress={() => {
+                    setOpenModal(false)
+                  }}>
+                    <Text style={[styles.button2Text, {color: '#003a75'}]}>Fechar</Text>
+                  </TouchableOpacity>
+                </View>
+            </View>
+          </Modal>
+            <TouchableWithoutFeedback onPress={()=> {
+              Keyboard.dismiss()
+            }}>
+              <View style={styles.header}>
+                <View></View>
+                        
+                        <TouchableOpacity
+              style={{}}
+              onPress={() => {
+                setOpen(false);
+                setSearch("");
+              }}
+                        >
+              <View style={{ alignSelf: "center", height: 38 }}>
+                <Text style={styles.cancel}>Cancelar</Text>
+              </View>
+                        </TouchableOpacity>
+                      </View>
+            </TouchableWithoutFeedback>
+        <ScrollView keyboardShouldPersistTaps="handled" style={{ flex: 1, marginTop: 65 + insets.top }}
+>
+            
+            { <View style={{paddingHorizontal: 20}}>
+                <Text style={[styles.title, {display: focused ? 'none' : 'flex'}]}>Mensagem</Text>
+                <TextInput style={[styles.textInput1, {
+                    backgroundColor: '#f2f2f2f3',
+                    marginTop: 20,
+                    width: '100%',padding: 10,
+                    height: 100,
+                    borderRadius: 5,
+                    display: focused ? 'none' : 'flex'
+                    
+                }]} multiline={true} numberOfLines={5} 
+                value={message} onChangeText={(val) => {
+                    setMessage(val)
+                }} placeholder="Digite a sua mensagem..."/>
+                <View style={{marginTop: 25, display: focused ? 'none' : 'flex'}}></View>
+                <Text style={[styles.title, {display: focused ? 'none' : 'flex'}]}>Destinatário</Text>
+                <View style={[styles.tags, {display: focused ? 'none' : 'flex'}]}>
+                  {['Todos', 'Contacto Específico'].map((item: any, index: number) => {
+                    return (
+                      <TouchableOpacity key={index} style={item == destination ? styles.tag1: styles.tag} onPress={() => {
+                        setDestination(item)
+                      }}>
+                        <Text style={item == destination ? styles.tagText1: styles.tagText}>{item}</Text>
+                      </TouchableOpacity>
+                    )
+                  })}
+                </View>
+
+                {destination != 'Todos' && <View style={{ paddingTop: 25, }}>
+                  <Text style={[styles.title,]}>
+                    Seleccione um contacto
+                  </Text>
+                  <View style={[styles.input, {
+                    marginTop: 10
+                  }]}>
             <Icon
               name="search"
               size={20}
@@ -343,6 +519,8 @@ const styles = StyleSheet.create({
             />
             <TextInput
               returnKeyType="search"
+              onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
               onSubmitEditing={() => {
                 // api.get(`products?q=${search}`).then((res) => {
                 //   setOpen(false);
@@ -387,35 +565,13 @@ const styles = StyleSheet.create({
               style={styles.textInput}
             />
           </View>
-          <TouchableOpacity
-            style={{}}
-            onPress={() => {
-              setOpen(false);
-              setSearch("");
-            }}
-          >
-            <View style={{ alignSelf: "center", height: 38 }}>
-              <Text style={styles.cancel}>Cancelar</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-        <ScrollView keyboardShouldPersistTaps="handled" style={{ flex: 1, marginTop: 65 + insets.top }}
->
-            {`${search}`.length > 0 && !searched && (
-                <View style={{ flex: 1, paddingHorizontal: 15 }}>
+          {`${search}`.length > 0 && !searched && (
+                <View style={{ flex: 1 }}>
                   {filter.length > 0 ? (
-                    <View>
+                    <View style={{marginTop: 25}}>
                       <Text style={styles.title}>Recomendações</Text>
                       <View style={styles.recomendations}>
-                        {(filter.concat([{
-    "name": "Todos Contactos",
-    "phone_number": "+351912345694",
-    "message": {
-      "text": "Vamos ao parque amanhã? Podemos levar as crianças, fazer um piquenique e aproveitar o dia ao ar livre para descansar um pouco da rotina diária.",
-      "date": "2024-04-25T08:30:00"
-    },
-    "viewed": false
-  },])).map((item: any, index: any) => {
+                        {(filter.concat([])).map((item: any, index: any) => {
             
                           return (
                             <TouchableOpacity
@@ -485,20 +641,10 @@ const styles = StyleSheet.create({
                 </View>
               )}
 
-            {`${search}`.length > 0 && searched && <View style={{paddingHorizontal: 20}}>
-                <Text>Mensagem</Text>
-                <TextInput style={[styles.textInput1, {
-                    backgroundColor: '#f2f2f2f3',
-                    marginTop: 20,
-                    width: '100%',padding: 10,
-                    height: 100,
-                    
-                }]} multiline={true} numberOfLines={5} 
-                value={message} onChangeText={(val) => {
-                    setMessage(val)
-                }} placeholder="Digite a sua mensagem..."/>
-                   {!load ? <View>
-                       {message.length > 0 ? <TouchableOpacity onPress={() => {
+                  </View>}
+                   
+                   {!load ? <View style={{marginTop: 25}}>
+                       {(message.length > 0 && ((destination != 'Todos' && searched) || destination == 'Todos')) ? <TouchableOpacity onPress={() => {
                         send()
                                         }} style={styles.button}>
                         <Text style={styles.buttonText}>Enviar</Text>
